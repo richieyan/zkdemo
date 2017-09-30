@@ -1,17 +1,14 @@
-import org.eclipse.jetty.server.Server;
 import services.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * 基本想法是构建一个生产者消费者的服务模型，可以自由创建多个生产者和消费的服务。
  * 多个服务之间通过zookeeper进行协调处理生产者和消费者的任务管理。
  * 具体到现实中，一般可能存在大量的生产者，前端用户产生的行为，而消费者是固定的后端服务器。
- * 假设使用zookeeper的主从结构，
+ * 假设使用zookeeper的主从结构
  * 生产者：创建任务到zookeeper
  * 消费者：master节点检测并分配任务，从节点处理任务。
  * @author Richie Yan
@@ -43,8 +40,14 @@ public class Runner implements ServiceListener {
         cfg.setConnectString("127.0.1:2181");
         Runner runner = new Runner(cfg);
 
-        runner.startService(new ProduceService());
+        runner.startService(new AdminClient());
+        runner.startService(new MasterService());
+        runner.startService(new MasterService());
+        runner.startService(new MasterService());
+
         runner.waitServiceComplete();
+
+        Thread.sleep(10000);
     }
 
     public void processEvent(ServiceEvent e) {
