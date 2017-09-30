@@ -1,0 +1,8 @@
+.idea/
+*.iml
+target/
+*.pyc
+/he-service/src/test/java/tsumtsum/TestService.java
+*.classpath
+*.project
+.settings/
