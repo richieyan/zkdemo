@@ -20,7 +20,8 @@ public class AdminClient extends AbstractService implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(AdminClient.class);
     private Thread thread = new Thread(this);
     private boolean running = false;
-    private AsyncCallback.StatCallback onMasterChange = new AsyncCallback.StatCallback() {
+
+    private AsyncCallback.StatCallback masterExistsCallback = new AsyncCallback.StatCallback() {
         @Override
         public void processResult(int rc, String path, Object ctx, Stat stat) {
             LOG.info("path--->{},{}",path,KeeperException.Code.get(rc));
@@ -31,10 +32,17 @@ public class AdminClient extends AbstractService implements Runnable {
                         checkMaster();
                     }
                     break;
+                case NODEEXISTS:
+                    LOG.info("NOTE exits---->");
+                    break;
                 case OK:
-                    LOG.info("start running--->true");
-                    running = true;
-                    thread.start();
+                    if(stat != null){//节点存在，启动admin
+                        LOG.info("start running--->true");
+                        running = true;
+                        thread.start();
+                    }else{//master节点还是不存在
+                        checkMaster();//继续check
+                    }
                     break;
         }
     }
@@ -48,7 +56,8 @@ public class AdminClient extends AbstractService implements Runnable {
     private void checkMaster(){
         LOG.info("check master---->");
         //检测master节点，并设置监听此path的后续变化
-        zk.exists("/master",true,onMasterChange,null);
+        //使用当前对象(AdminClient)为Watcher
+        zk.exists("/master",true, masterExistsCallback,null);
     }
 
     @Override

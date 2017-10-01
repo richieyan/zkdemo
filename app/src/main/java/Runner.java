@@ -40,10 +40,10 @@ public class Runner implements ServiceListener {
         cfg.setConnectString("127.0.1:2181");
         Runner runner = new Runner(cfg);
 
-        runner.startService(new AdminClient());
-        runner.startService(new MasterService());
-        runner.startService(new MasterService());
-        runner.startService(new MasterService());
+//        runner.startService(new AdminClient());
+        runner.startService(new MasterService(6));
+        runner.startService(new MasterService(18));
+        runner.startService(new MasterService(30));
 
         runner.waitServiceComplete();
 
