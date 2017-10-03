@@ -71,9 +71,13 @@ public class MasterService extends AbstractService implements Runnable {
 
     //创建协助节点，持久类型
     private void bootstrap() {
+        //工作节点
         createParent("/workers", new byte[0]);
+        //分配节点
         createParent("/assign", new byte[0]);
+        //任务
         createParent("/tasks", new byte[0]);
+        //状态
         createParent("/status", new byte[0]);
     }
 
